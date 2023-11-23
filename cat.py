@@ -182,6 +182,36 @@ class LifeManager:
     def get_lives(self):
         return self.lives
     
+class Portal:
+    def __init__(self, x, y, width, height):
+        self.position = [x, y]
+        self.width = width
+        self.height = height
+
+    def is_character_inside(self, character):
+        character_left_top = character.position
+        character_right_bottom = (
+            character.position[0] + character.character_image.width,
+            character.position[1] + character.character_image.height,
+        )
+
+        portal_left_top = self.position
+        portal_right_bottom = (
+            self.position[0] + self.width,
+            self.position[1] + self.height,
+        )
+
+        if (
+            (portal_left_top[0] <= character_left_top[0] <= portal_right_bottom[0]
+            and portal_left_top[1] <= character_left_top[1] <= portal_right_bottom[1])
+            or
+            (portal_left_top[0] <= character_right_bottom[0] <= portal_right_bottom[0]
+            and portal_left_top[1] <= character_right_bottom[1] <= portal_right_bottom[1])
+        ):
+            return True
+        return False
+
+    
     
 def show_intro_images(joystick, intro_images):
     # 이미지를 보여주는 함수
@@ -200,7 +230,7 @@ def show_intro_images(joystick, intro_images):
                 break
 
 
-def stage1(joystick, my_character, platforms, background_image,obstacles):
+def stage1(joystick, my_character, platforms, background_image, obstacles, portal):
     # 초기 위치 설정
     camera_position = [0, 0]
     font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
@@ -251,6 +281,10 @@ def stage1(joystick, my_character, platforms, background_image,obstacles):
             print("Game over!") # 이걸 이제 나중에 게임 오버 인트로 함수 부르면 될듯
             break
         
+        if portal.is_character_inside(my_character) and joystick.is_button_pressed(joystick.button_U):
+            print("포탈")
+            break
+        
 
         my_character.draw(image, camera_position)
 
@@ -258,15 +292,18 @@ def stage1(joystick, my_character, platforms, background_image,obstacles):
         joystick.disp.image(image.convert("RGBA"))
 
 
+
 # 큰 이미지 로드
 background_image = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/test_background.png").convert("RGB")
 character_image_path = "/home/kau-esw/esw/SuperpowerCat/Asset/Charactor.png"  # 캐릭터 이미지 파일 경로
+
+###background_images = [ (여기에 배열로 넣고 아래 스테이지를 부를 때, background_image[0,1... 이렇게 해도 되지 않나])]
 
 # 플랫폼 생성
 platforms1 = [
     Platform(0, 210, 480, 70),
     Platform(100, 190, 50, 10),
-    Platform(240, 190, 50, 20) # 플랫폼 위치와 크기 설정
+    #Platform(240, 190, 50, 20) # 플랫폼 위치와 크기 설정
     # 필요한 만큼 플랫폼을 추가할 수 있습니다.
 ]
 
@@ -275,6 +312,7 @@ intro_image_paths = [
     "/home/kau-esw/esw/SuperpowerCat/Asset/Intro2.png",
     "/home/kau-esw/esw/SuperpowerCat/Asset/Intro3.png",
 ]
+
 
 obstacle1 = [
     Obstacle(0,210,1,1),
@@ -287,9 +325,12 @@ my_character = Character(
     joystick.disp.width // 2 - 20, joystick.disp.height // 2 - 20, character_image_path
 )
 
+# 포탈 생성
+portal1 = Portal(260, 190, 50, 20)  # 포탈 위치와 크기 설정
+
 
 # 인트로 이미지 보여주기
 show_intro_images(joystick, intro_image_paths)
 
 # 스테이지 1 시작
-stage1(joystick, my_character, platforms1, background_image, obstacle1)
+stage1(joystick, my_character, platforms1, background_image, obstacle1, portal1)

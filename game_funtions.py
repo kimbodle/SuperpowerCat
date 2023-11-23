@@ -1,0 +1,80 @@
+import time
+from PIL import Image, ImageDraw, ImageFont
+
+
+   
+def show_intro_images(joystick, intro_images):
+    # 이미지를 보여주는 함수
+    for image_path in intro_images:
+        # 이미지를 로드하고 RGB 모드로 변환
+        image = Image.open(image_path).convert("RGB")
+
+        # 디스플레이 크기에 맞게 이미지 크기를 조정
+        image = image.resize((joystick.disp.width, joystick.disp.height))
+
+        # A 버튼이 눌릴 때까지 이미지를 계속해서 디스플레이에 표시
+        while True:
+            joystick.disp.image(image)
+            if joystick.is_button_pressed(joystick.button_A):
+                time.sleep(0.2)  # 디바운싱: 버튼이 눌렸다 떼어진 후 0.2초 동안 추가 입력을 무시
+                break
+
+
+def stage1(joystick, my_character, platforms, background_image, obstacles, portal):
+    # 초기 위치 설정
+    camera_position = [0, 0]
+    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
+
+    while True:
+        # 조이스틱 버튼 확인 및 캐릭터 위치 갱신
+        my_character.move(joystick, platforms)
+        
+        # 카메라 위치 조절 (이미지 경계를 벗어나지 않도록)
+        camera_position[0] = max(
+            0, min(my_character.position[0] - joystick.disp.width // 7, background_image.width - joystick.disp.width)
+        )
+        camera_position[1] = max(
+            0, min(my_character.position[1] - joystick.disp.height // 2, background_image.height - joystick.disp.height)
+        )
+
+        # 화면에 보이는 이미지 부분 자르기
+        visible_image = background_image.crop(
+            (
+                camera_position[0],
+                camera_position[1],
+                camera_position[0] + joystick.disp.width,
+                camera_position[1] + joystick.disp.height,
+            )
+        )
+        
+
+        # RGB 모드의 빈 이미지 생성
+        image = Image.new("RGBA", (joystick.disp.width, joystick.disp.height))
+        draw = ImageDraw.Draw(image)
+
+        # 보이는 이미지 부분을 새로운 이미지에 붙여넣기
+        image.paste(visible_image, (0, 0))
+        draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(255,255,102), font=font)
+        draw.text((10, 10), f"Stage 1", fill=(153,255,51), font=font)
+        
+        # 충돌 확인 및 목숨 감소
+        previous_lives = my_character.life_manager.get_lives()  # 충돌 전 캐릭터의 목숨
+        my_character.check_collision(obstacles)
+        
+        if my_character.life_manager.get_lives() < previous_lives:
+            draw.text((10, 10), f"Lives: {my_character.life_manager.get_lives()}", fill="red", font=font)
+
+        # 캐릭터의 목숨이 0 이하인 경우 게임 종료
+        if my_character.life_manager.get_lives() <= 0:
+            print("Game over!") # 이걸 이제 나중에 게임 오버 인트로 함수 부르면 될듯
+            break
+        
+        # 포탈 확인 및 다음 스테이지로 이동
+        if portal.is_character_inside(my_character) and joystick.is_button_pressed(joystick.button_U):
+            break
+
+        # 캐릭터 그리기
+        my_character.draw(image, camera_position)
+
+        # RGB 디스플레이에 이미지 표시
+        joystick.disp.image(image.convert("RGBA"))
