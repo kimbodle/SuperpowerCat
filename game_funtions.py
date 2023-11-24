@@ -20,12 +20,15 @@ def show_intro_images(joystick, intro_images):
                 break
 
 
-def stage1(joystick, my_character, platforms, background_image, obstacles, portal):
+
+def stage1(joystick, my_character, platforms, background_image, obstacles, portal, background_images, skills):
     # 초기 위치 설정
     camera_position = [0, 0]
     font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
 
+
     while True:
+
         # 조이스틱 버튼 확인 및 캐릭터 위치 갱신
         my_character.move(joystick, platforms)
         
@@ -69,12 +72,90 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
             print("Game over!") # 이걸 이제 나중에 게임 오버 인트로 함수 부르면 될듯
             break
         
-        # 포탈 확인 및 다음 스테이지로 이동
         if portal.is_character_inside(my_character) and joystick.is_button_pressed(joystick.button_U):
-            break
+            print("포탈")
+            time.sleep(1)
+            # 입력 패턴 정의
+            pattern = ['U', 'U', 'D', 'R', 'L']
 
-        # 캐릭터 그리기
+
+            # 스테이지2 시작
+            monster_stage1(joystick, background_images[1], pattern, skills)
+
+            # 1초 대기
+            time.sleep(1)
+
+            break
+        
+
         my_character.draw(image, camera_position)
 
         # RGB 디스플레이에 이미지 표시
         joystick.disp.image(image.convert("RGBA"))
+        
+        
+
+def monster_stage1(joystick, background_image, pattern, skills):
+    # 입력 패턴 인덱스 초기화
+    pattern_index = 0
+
+    # 패턴 입력 결과를 저장할 리스트 초기화
+    pattern_result = []
+
+    # 몬스터 스테이지1 시작
+    while True:
+        # 조이스틱 입력 확인
+        if joystick.is_button_pressed(joystick.button_U):
+            input = 'U'
+        elif joystick.is_button_pressed(joystick.button_D):
+            input = 'D'
+        elif joystick.is_button_pressed(joystick.button_L):
+            input = 'L'
+        elif joystick.is_button_pressed(joystick.button_R):
+            input = 'R'
+        else:
+            input = None
+
+        # 입력이 있으면 패턴 결과를 업데이트
+        if input is not None:
+            # 입력이 패턴과 일치하면 'O', 아니면 'X'를 결과에 추가
+            if input == pattern[pattern_index]:
+                pattern_result.append('O')
+            else:
+                pattern_result.append('X')
+
+            # 패턴 인덱스를 증가
+            pattern_index += 1
+
+        # 이미지에 패턴 결과를 그리기
+        image = Image.new("RGBA", (joystick.disp.width, joystick.disp.height))
+        image.paste(background_image)
+        draw = ImageDraw.Draw(image)
+        draw.text((10, 10), ' '.join(pattern_result), fill="white")
+
+        # RGB 디스플레이에 이미지 표시
+        joystick.disp.image(image.convert("RGBA"))
+
+        # 디바운싱
+        time.sleep(0.2)
+
+        # 모든 패턴을 입력했으면
+        if pattern_index >= len(pattern):
+            # 결과 이미지를 로드: 패턴 결과에 'X'가 하나라도 있으면 'error.png', 아니면 'skill1.png'
+
+            result_image = skills[1] if 'X' in pattern_result else skills[0]
+            
+            # 결과 이미지 표시
+            joystick.disp.image(result_image)
+
+            # 1초 대기
+            time.sleep(1)
+
+            # 패턴 결과에 'X'가 없으면 몬스터 스테이지2 종료
+            if 'X' not in pattern_result:
+                joystick.disp.image(skills[2])
+                break
+
+            # 패턴 결과를 초기화하고 다시 입력 받기
+            pattern_result.clear()
+            pattern_index = 0
