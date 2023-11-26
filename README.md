@@ -16,3 +16,8 @@ portal add, file modul
 
 23.11.24
 monster_stage1 functions, image add
+
+23.11.26
+stage1_background, Platform, obstacle, portal (x,y,w,h)add,
+Obstacle class modify
+moster_stage1 background change

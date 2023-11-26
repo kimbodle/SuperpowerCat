@@ -65,7 +65,7 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
         my_character.check_collision(obstacles)
         
         if my_character.life_manager.get_lives() < previous_lives:
-            draw.text((10, 10), f"Lives: {my_character.life_manager.get_lives()}", fill="red", font=font)
+            draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill="red", font=font)
 
         # 캐릭터의 목숨이 0 이하인 경우 게임 종료
         if my_character.life_manager.get_lives() <= 0:
@@ -76,7 +76,7 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
             print("포탈")
             time.sleep(1)
             # 입력 패턴 정의
-            pattern = ['U', 'U', 'D', 'R', 'L']
+            pattern = ['U', 'D', 'R', 'R', 'U','L','L']
 
 
             # 스테이지2 시작

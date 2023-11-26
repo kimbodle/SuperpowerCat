@@ -17,9 +17,15 @@ class Obstacle:
     def is_character_inside(self, character):
         character_left = character.position[0]
         character_right = character.position[0] + character.character_image.width
+        character_top = character.position[1]
+        character_bottom = character.position[1] + character.character_image.height
+
         obstacle_left = self.position[0]
         obstacle_right = self.position[0] + self.width
+        obstacle_top = self.position[1]
+        obstacle_bottom = self.position[1] + self.height
 
-        if obstacle_left <= character_left <= obstacle_right or obstacle_left <= character_right <= obstacle_right:
+        if ((obstacle_left <= character_left <= obstacle_right or obstacle_left <= character_right <= obstacle_right) and
+            (obstacle_top <= character_top <= obstacle_bottom or obstacle_top <= character_bottom <= obstacle_bottom)):
             return True
         return False
