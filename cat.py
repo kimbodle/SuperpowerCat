@@ -98,19 +98,20 @@ class Obstacle:
         return False
 
 class Character:
-    def __init__(self, x, y, character_image_path):
+    def __init__(self, x, y, character_image_path, bullet_image_path):
         self.position = [x, y]
         self.jumping = False
         self.jump_height = 40  # 점프 높이
         self.jump_frames = 10  # 점프에 걸리는 프레임 수
         self.jump_frame_count = 0
         self.character_image = Image.open(character_image_path, mode='r').convert("RGBA")
+        self.bullet = Bullet(x, y, bullet_image_path)
         #self.lives = 3
         self.life_manager = LifeManager(3)  # 캐릭터의 목숨 관리자
         self.invincible = False  # 무적 상태
         self.invincibility_start_time = None  # 무적 상태 시작 시간
 
-    def move(self, joystick, platforms):
+    def move(self, joystick, platforms, monster):
         # 조이스틱 입력에 따라 캐릭터 위치 갱신
         #if joystick.is_button_pressed(joystick.button_U):
         #    self.position[1] -= 5
@@ -120,6 +121,19 @@ class Character:
             self.position[0] -= 5
         elif joystick.is_button_pressed(joystick.button_R):
             self.position[0] += 5
+            
+        if joystick.is_button_pressed(joystick.button_A):
+            if not self.bullet.active:
+                self.bullet.position = [self.position[0], self.position[1]]
+                self.bullet.active = True
+        
+        # 총알 이동
+        self.bullet.move()
+            
+        # A 버튼이 떼어진 경우 총알 발사 상태를 재설정
+        if not joystick.is_button_pressed(joystick.button_A):
+            self.bullet.active = False
+
 
         # 플랫폼 위에서 움직임 확인
         on_platform = False
@@ -171,7 +185,10 @@ class Character:
             self.position[1] - camera_position[1],
         )
         image.alpha_composite(self.character_image, character_draw_position)
-
+        # 총알 그리기
+        self.bullet.draw(image, camera_position)
+        
+        
 class LifeManager:
     def __init__(self, initial_lives):
         self.lives = initial_lives
@@ -230,16 +247,15 @@ def show_intro_images(joystick, intro_images):
                 break
 
 
-def stage1(joystick, my_character, platforms, background_image, obstacles, portal):
+def stage1(joystick, my_character, platforms, background_image, obstacles, portal, monster):
     # 초기 위치 설정
     camera_position = [0, 0]
     font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
-
-
+    
     while True:
 
         # 조이스틱 버튼 확인 및 캐릭터 위치 갱신
-        my_character.move(joystick, platforms)
+        my_character.move(joystick, platforms, monster)
         
         # 카메라 위치 조절 (이미지 경계를 벗어나지 않도록)
         camera_position[0] = max(
@@ -259,15 +275,46 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
             )
         )
         
+        if joystick.is_button_pressed(joystick.button_A):
+            if not my_character.bullet.active:
+                my_character.bullet.position = [my_character.position[0], my_character.position[1]]
+                my_character.bullet.active = True
+        
+        # 총알 이동
+        my_character.bullet.move()
+        print(monster[0].active)
+        
+        # 몬스터와의 충돌 확인
+        if my_character.bullet.active and my_character.bullet.check_collision(monster):
+            my_character.bullet.active = False  # 총알이 몬스터에 맞았음
+            monster[0].active = False  # 몬스터를 비활성화하여 사라지게 함
+            # 몬스터 피격 처리 (삭제하거나 몬스터 이미지 변경 등)
+        
+        if monsters[0].active:
+            monster_draw_position = (
+                monsters[0].position[0] - camera_position[0],
+                monsters[0].position[1] - camera_position[1],
+            )
+            visible_image.paste(monster[0].monster_image, monster_draw_position, monster[0].monster_image)
+        else:
+            # 몬스터가 비활성화된 경우 이미지 없애기
+            end_monster_image = monsters[0].monster_image.copy()
+            end_monster_image.putalpha(0)  # 투명도를 줘서 빨간색으로 표시
+            visible_image.paste(end_monster_image, monster_draw_position,end_monster_image)
+        
 
         # RGB 모드의 빈 이미지 생성
         image = Image.new("RGBA", (joystick.disp.width, joystick.disp.height))
         draw = ImageDraw.Draw(image)
-
+        
+        
         # 보이는 이미지 부분을 새로운 이미지에 붙여넣기
         image.paste(visible_image, (0, 0))
         draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(255,255,102), font=font)
         draw.text((10, 10), f"Stage 1", fill=(153,255,51), font=font)
+        
+        
+        my_character.draw(image, camera_position)
         
         # 충돌 확인 및 목숨 감소
         previous_lives = my_character.life_manager.get_lives()  # 충돌 전 캐릭터의 목숨
@@ -370,15 +417,67 @@ def monster_stage1(joystick, background_image, pattern, skills):
             pattern_index = 0
 
 
+class Bullet:
+    def __init__(self, x, y, bullet_image_path):
+        self.position = [x, y]
+        self.bullet_image = Image.open(bullet_image_path).convert("RGBA")
+        self.active = False  # 총알이 활성화되어 있는지 여부
+
+    def move(self):
+        if self.active:
+            # 총알을 위로 이동 (필요에 따라 속도 조절)
+            self.position[0] += 5
+
+    def draw(self, image, camera_position):
+        if self.active:
+            bullet_draw_position = (
+                self.position[0] - camera_position[0],
+                self.position[1] - camera_position[1],
+            )
+            image.alpha_composite(self.bullet_image, bullet_draw_position)
+
+    def check_collision(self, monsters):
+        # 몬스터와 총알의 충돌을 확인
+        bullet_left = self.position[0]
+        bullet_right = self.position[0] + self.bullet_image.width
+        bullet_top = self.position[1]
+        bullet_bottom = self.position[1] + self.bullet_image.height
+
+        for monster in monsters:
+            monster_left = monster.position[0]
+            monster_right = monster.position[0] + monster.width
+            monster_top = monster.position[1]
+            monster_bottom = monster.position[1] + monster.height
+
+            if (
+                bullet_right >= monster_left
+                and bullet_left <= monster_right
+                and bullet_bottom >= monster_top
+                and bullet_top <= monster_bottom
+            ):
+                return True
+        return False
+    
+class Monster:
+    def __init__(self, x, y, width, height,image_path):
+        self.position = [x, y]
+        self.width = width
+        self.height = height
+        self.active = True  # 몬스터가 활성화되어 있는지 여부
+        self.monster_image = Image.open(image_path).convert("RGBA")
+    
+# Joystick 및 Character 클래스 인스턴스 생성
+joystick = Joystick()
 
 #이미지 로드
-background_image0 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/test_background.png").convert("RGB")
+background_image0 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/test_background.png").convert("RGBA")
 background_image1 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/monster_stage.png").convert("RGBA") #몬스터
 character_image_path = "/home/kau-esw/esw/SuperpowerCat/Asset/Charactor.png"  # 캐릭터 이미지 파일 경로
 skill0 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/skill0.png").convert("RGBA")
 skill0_end = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/skill0_end.png").convert("RGBA")
 skill0_error = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/skill0_error.png").convert("RGBA")
-
+bullet_image_path = "/home/kau-esw/esw/SuperpowerCat/Asset/bullet.png"
+monster_image_path1 = "/home/kau-esw/esw/SuperpowerCat/Asset/mini_monster1.png"
 
 background_images = [background_image0, background_image1]
 
@@ -402,19 +501,18 @@ obstacle1 = [
     Obstacle(0,210,1,1),
 ]
 
-# Joystick 및 Character 클래스 인스턴스 생성
-joystick = Joystick()
-
 my_character = Character(
-    joystick.disp.width // 2 - 20, joystick.disp.height // 2 - 20, character_image_path
+    joystick.disp.width // 2 - 20, joystick.disp.height // 2 - 20, character_image_path, bullet_image_path
 )
 
 # 포탈 생성
 portal1 = Portal(260, 190, 50, 20)  # 포탈 위치와 크기 설정
+
+monsters =[ Monster(200,120,61,47,monster_image_path1)]
 
 
 # 인트로 이미지 보여주기
 show_intro_images(joystick, intro_image_paths)
 
 # 스테이지 1 시작
-stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1)
+stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, monsters)
