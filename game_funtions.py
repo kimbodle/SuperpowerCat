@@ -58,7 +58,7 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
         # 보이는 이미지 부분을 새로운 이미지에 붙여넣기
         image.paste(visible_image, (0, 0))
         draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(255,255,102), font=font)
-        draw.text((10, 10), f"Stage 1", fill=(153,255,51), font=font)
+        draw.text((10, 10), f"Stage 1", fill=(68,221,187), font=font)
         
         # 충돌 확인 및 목숨 감소
         previous_lives = my_character.life_manager.get_lives()  # 충돌 전 캐릭터의 목숨
@@ -162,7 +162,7 @@ def monster_stage1(joystick, background_image, pattern, skills):
 
 
 
-def stage2(joystick, my_character, platforms, background_image, obstacles, portal, background_images, skills):
+def stage2(joystick, my_character, platforms, background_image, obstacles, portal, background_images, skills, monsters):
     # 초기 위치 설정
     camera_position = [0, 0]
     font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 15)
@@ -171,7 +171,7 @@ def stage2(joystick, my_character, platforms, background_image, obstacles, porta
     while True:
 
         # 조이스틱 버튼 확인 및 캐릭터 위치 갱신
-        my_character.move(joystick, platforms)
+        my_character.move(joystick, platforms, monsters)
         
         # 카메라 위치 조절 (이미지 경계를 벗어나지 않도록)
         camera_position[0] = max(
@@ -191,6 +191,80 @@ def stage2(joystick, my_character, platforms, background_image, obstacles, porta
             )
         )
         
+        if joystick.is_button_pressed(joystick.button_A):
+            if not my_character.bullet.active:
+                my_character.bullet.position = [my_character.position[0], my_character.position[1]]
+                my_character.bullet.active = True
+        
+        # 총알 이동
+        my_character.bullet.move()
+        
+        # 몬스터1 충돌 확인
+        if my_character.bullet.active and my_character.bullet.check_collision(monsters[0]):
+            my_character.bullet.active = False  # 총알이 몬스터에 맞았음
+            monsters[0].active = False  # 몬스터를 비활성화하여 사라지게 함
+            # 몬스터 피격 처리 (삭제하거나 몬스터 이미지 변경 등)
+        
+        if monsters[0].active:
+            monster_draw_position = (
+                monsters[0].position[0] - camera_position[0],
+                monsters[0].position[1] - camera_position[1],
+            )
+            visible_image.paste(monsters[0].monster_image, monster_draw_position, monsters[0].monster_image)
+        else:
+            # 몬스터가 비활성화된 경우 이미지 없애기
+            end_monster_image = monsters[0].monster_image.copy()
+            end_monster_image.putalpha(0)  # 투명도를 줘서 몬스터 없애기
+            visible_image.paste(end_monster_image, monster_draw_position,end_monster_image)
+
+        # 몬스터2 충돌 확인        
+        if my_character.bullet.active and my_character.bullet.check_collision(monsters[1]):
+            my_character.bullet.active = False 
+            monsters[1].active = False 
+              
+        if monsters[1].active:
+            monster_draw_position = (
+                monsters[1].position[0] - camera_position[0],
+                monsters[1].position[1] - camera_position[1],
+            )
+            visible_image.paste(monsters[1].monster_image, monster_draw_position, monsters[1].monster_image)
+        else:
+            end_monster_image = monsters[1].monster_image.copy()
+            end_monster_image.putalpha(0)
+            visible_image.paste(end_monster_image, monster_draw_position,end_monster_image)
+            
+        # 몬스터3 충돌 확인        
+        if my_character.bullet.active and my_character.bullet.check_collision(monsters[2]):
+            my_character.bullet.active = False 
+            monsters[2].active = False 
+              
+        if monsters[2].active:
+            monster_draw_position = (
+                monsters[2].position[0] - camera_position[0],
+                monsters[2].position[1] - camera_position[1],
+            )
+            visible_image.paste(monsters[2].monster_image, monster_draw_position, monsters[2].monster_image)
+        else:
+            end_monster_image = monsters[2].monster_image.copy()
+            end_monster_image.putalpha(0)
+            visible_image.paste(end_monster_image, monster_draw_position,end_monster_image)
+            
+        # 몬스터4 충돌 확인        
+        if my_character.bullet.active and my_character.bullet.check_collision(monsters[3]):
+            my_character.bullet.active = False 
+            monsters[3].active = False 
+              
+        if monsters[3].active:
+            monster_draw_position = (
+                monsters[3].position[0] - camera_position[0],
+                monsters[3].position[1] - camera_position[1],
+            )
+            visible_image.paste(monsters[3].monster_image, monster_draw_position, monsters[3].monster_image)
+        else:
+            end_monster_image = monsters[3].monster_image.copy()
+            end_monster_image.putalpha(0)
+            visible_image.paste(end_monster_image, monster_draw_position,end_monster_image)
+        
 
         # RGB 모드의 빈 이미지 생성
         image = Image.new("RGBA", (joystick.disp.width, joystick.disp.height))
@@ -199,7 +273,7 @@ def stage2(joystick, my_character, platforms, background_image, obstacles, porta
         # 보이는 이미지 부분을 새로운 이미지에 붙여넣기
         image.paste(visible_image, (0, 0))
         draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(255,255,102), font=font)
-        draw.text((10, 10), f"Stage 2", fill=(153,255,51), font=font)
+        draw.text((10, 10), f"Stage 2", fill=(225,000,102), font=font)
         
         # 충돌 확인 및 목숨 감소
         previous_lives = my_character.life_manager.get_lives()  # 충돌 전 캐릭터의 목숨

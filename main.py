@@ -4,6 +4,7 @@ from secondFloor import Platform
 from obstacle import Obstacle
 from portal import Portal
 from game_funtions import show_intro_images, stage1, stage2
+from character2 import Character2, Bullet, Monster
 import time
 import random
 from colorsys import hsv_to_rgb
@@ -29,10 +30,15 @@ def main():
     skill2 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/skill2.png").convert("RGBA")
     skill2_end = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/skill2_end.png").convert("RGBA")
     skill2_error = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/skill2_error.png").convert("RGBA")
-
+    
+    bullet_image_path = "/home/kau-esw/esw/SuperpowerCat/Asset/bullet.png"
+    monster_image_path1 = "/home/kau-esw/esw/SuperpowerCat/Asset/mini_monster1.png"
+    monster_image_path2 = "/home/kau-esw/esw/SuperpowerCat/Asset/mini_monster2.png"
 
     background_images = [background_image0, background_image1, background_image2, background_image3]
 
+    monsters =[ Monster(542,144,61,47,monster_image_path1), Monster(1343,105,61,47,monster_image_path1), Monster(1600,133,41,62,monster_image_path2),Monster(1800,132,41,62,monster_image_path2)]
+    
     # 플랫폼 생성
     platforms1 = [
         Platform(0, 210, 1920, 30), #바닥
@@ -87,6 +93,10 @@ def main():
     my_character = Character(
         joystick.disp.width // 2 - 60, joystick.disp.height // 2 - 20, character_image_path
     )
+    
+    my_character2 = Character2(
+        joystick.disp.width // 2 - 60, joystick.disp.height // 2 - 20, character_image_path, bullet_image_path
+    )
 
     # 포탈 생성
     #portal1 = Portal(260, 190, 50, 20)  # 포탈 위치와 크기 설정
@@ -96,10 +106,11 @@ def main():
     show_intro_images(joystick, intro_image_paths)
 
     # 스테이지 1 시작
-    #stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, background_images, skills)
+    stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, background_images, skills)
     print("스테이지 1 끝")
     
-    stage2(joystick, my_character, platforms2, background_images[2], obstacle2, portal1, background_images, skills)
+    stage2(joystick, my_character2, platforms2, background_images[2], obstacle2, portal1, background_images, skills, monsters)
+    print("스테이지 2 끝")
     
    
     
