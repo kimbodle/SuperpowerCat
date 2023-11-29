@@ -148,7 +148,7 @@ def main():
     show_intro_images(joystick, intro_image_paths)
 
     # 스테이지 1 시작
-    stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, background_images, skills)
+    #stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, background_images, skills)
     print("스테이지 1 끝")
     
     stage2(joystick, my_character2, platforms2, background_images[2], obstacle2, portal1, background_images, skills, monsters)
