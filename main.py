@@ -3,7 +3,7 @@ from character import Character
 from secondFloor import Platform
 from obstacle import Obstacle
 from portal import Portal
-from game_funtions import show_intro_images, stage1, stage2, stage3
+from game_funtions import show_intro_images, stage1, stage2, stage3, show_game_over
 from character2 import Character2, Bullet, Monster
 from character3 import Character3, Bullet, Monster
 import time
@@ -20,6 +20,10 @@ def main():
     # Joystick 및 Character 클래스 인스턴스 생성
     joystick = Joystick()
     
+    image = Image.new("RGBA", (joystick.disp.width, joystick.disp.height))
+    draw = ImageDraw.Draw(image)
+    # 화면 업데이트
+    joystick.disp.image(image.convert("RGBA"))
 
     #이미지 로드
     background_image0 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/stage1.png").convert("RGB") #스테이지1 배경 완료
@@ -29,6 +33,7 @@ def main():
     background_image4 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/stage3.png").convert("RGBA")
     background_image5 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/monster_stage31.png").convert("RGBA")
     background_image6 = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/monster_stage32r.png").convert("RGBA")
+    Game_clear = Image.open("/home/kau-esw/esw/SuperpowerCat/Asset/Game-Clear.png").convert("RGBA")
     
     
     character_image_path = "/home/kau-esw/esw/SuperpowerCat/Asset/Charactor.png"  # 캐릭터 이미지 파일 경로 완료
@@ -146,15 +151,31 @@ def main():
 
     # 인트로 이미지 보여주기
     show_intro_images(joystick, intro_image_paths)
-
+    
     # 스테이지 1 시작
-    #stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, background_images, skills)
-    print("스테이지 1 끝")
+    # if stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, background_images, skills) == 7 :
+    #     show_game_over(joystick)
+    #     return
     
-    stage2(joystick, my_character2, platforms2, background_images[2], obstacle2, portal1, background_images, skills, monsters)
-    print("스테이지 2 끝")
+    # 스테이지 2 시작
+    # if stage2(joystick, my_character2, platforms2, background_images[2], obstacle2, portal1, background_images, skills, monsters) == 7 :
+    #     show_game_over(joystick)
+    #     return
     
-    stage3(joystick, my_character3, platforms3, background_images[4], obstacle3, portal1, background_images, skills, monsters)
+    # 스테이지 3 시작
+    if stage3(joystick, my_character3, platforms3, background_images[4], obstacle3, portal1, background_images, skills, monsters) == 7 :
+        show_game_over(joystick)
+        return
+
+    print("스테이지 종료")
+    
+    draw.rectangle([(0, 0), (joystick.disp.width, joystick.disp.height)], fill=(0, 0, 0, 60))
+    # 화면 업데이트
+    joystick.disp.image(image.convert("RGBA"))
+    time.sleep(2)
+    
+    
+    joystick.disp.image(Game_clear)
    
     
     

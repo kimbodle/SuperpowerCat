@@ -69,8 +69,9 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
 
         # 캐릭터의 목숨이 0 이하인 경우 게임 종료
         if my_character.life_manager.get_lives() <= 0:
-            print("Game over!") # 이걸 이제 나중에 게임 오버 인트로 함수 부르면 될듯
-            break
+            print("Game over!")
+            #break
+            return 7
         
         if portal.is_character_inside(my_character) and joystick.is_button_pressed(joystick.button_U):
             print("포탈")
@@ -79,7 +80,7 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
             pattern = ['U', 'D', 'R', 'R', 'U','L','L']
 
 
-            # 스테이지2 시작
+            # 몬스터 스테이지1 시작
             monster_stage1(joystick, background_images[1], pattern, skills)
 
             # 1초 대기
@@ -284,8 +285,9 @@ def stage2(joystick, my_character, platforms, background_image, obstacles, porta
 
         # 캐릭터의 목숨이 0 이하인 경우 게임 종료
         if my_character.life_manager.get_lives() <= 0:
-            print("Game over!") # 이걸 이제 나중에 게임 오버 인트로 함수 부르면 될듯
-            break
+            print("Game over!")
+            #break
+            return 7
         
         if portal.is_character_inside(my_character) and joystick.is_button_pressed(joystick.button_U):
             print("포탈")
@@ -464,8 +466,9 @@ def stage3(joystick, my_character, platforms, background_image, obstacles, porta
 
         # 캐릭터의 목숨이 0 이하인 경우 게임 종료
         if my_character.life_manager.get_lives() <= 0:
-            print("Game over!") # 이걸 이제 나중에 게임 오버 인트로 함수 부르면 될듯
-            break
+            print("Game over!")
+            #break
+            return 7
         
         if portal.is_character_inside(my_character) and joystick.is_button_pressed(joystick.button_U):
             print("포탈")
@@ -632,3 +635,13 @@ def monster_stage32(joystick, background_image, pattern, skills):
             # 패턴 결과를 초기화하고 다시 입력 받기
             pattern_result.clear()
             pattern_index = 0
+            
+def show_game_over(joystick):
+    game_over_image_path = "/home/kau-esw/esw/SuperpowerCat/Asset/GameOver.png"
+    game_over_image = Image.open(game_over_image_path).convert("RGBA")
+
+    # RGB 디스플레이에 이미지 표시
+    joystick.disp.image(game_over_image)
+
+    # 일정 시간 대기 후 게임 종료
+    time.sleep(2)

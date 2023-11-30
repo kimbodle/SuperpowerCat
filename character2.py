@@ -15,7 +15,7 @@ class Character2:
         self.invincible = False  # 무적 상태
         self.invincibility_start_time = None  # 무적 상태 시작 시간
 
-    def move(self, joystick, platforms, monsters):
+    def move(self, joystick, platforms, monster):
         # 조이스틱 입력에 따라 캐릭터 위치 갱신
         #if joystick.is_button_pressed(joystick.button_U):
         #    self.position[1] -= 5
@@ -66,18 +66,6 @@ class Character2:
             if self.jump_frame_count >= self.jump_frames:
                 self.jumping = False
         
-        # 각 몬스터와 캐릭터의 충돌을 확인
-        for monster in monsters:
-            if monster.is_character_inside2(self) and not self.invincible:
-                self.life_manager.decrease_life()
-                self.invincible = True  # 무적 상태 시작
-                self.invincibility_start_time = time.time()  # 무적 상태 시작 시간 저장
-                break  # 이미 한 몬스터와 충돌했으므로 더 이상의 충돌 확인은 필요 없음
-
-        # 무적 상태에서 3초가 지났으면 무적 상태 해제
-        if self.invincible and time.time() - self.invincibility_start_time >= 3:
-            self.invincible = False
-            self.invincibility_start_time = None
 
     def check_collision(self, obstacles):
         # 무적 상태가 아닐 때만 충돌을 검사하고 목숨을 감소
@@ -179,24 +167,3 @@ class Monster:
         self.height = height
         self.active = True  # 몬스터가 활성화되어 있는지 여부
         self.monster_image = Image.open(image_path).convert("RGBA")
-
-    def is_character_inside2(self, character):
-        # 캐릭터와 몬스터의 충돌을 확인
-        character_left = character.position[0]
-        character_right = character.position[0] + character.character_image.width
-        character_top = character.position[1]
-        character_bottom = character.position[1] + character.character_image.height
-
-        monster_left = self.position[0]
-        monster_right = self.position[0] + self.width
-        monster_top = self.position[1]
-        monster_bottom = self.position[1] + self.height
-
-        if (
-            character_right >= monster_left
-            and character_left <= monster_right
-            and character_bottom >= monster_top
-            and character_top <= monster_bottom
-            ):
-                return True
-        return False
