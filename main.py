@@ -62,6 +62,7 @@ def main():
     # 플랫폼 생성
     platforms1 = [
         Platform(0, 210, 1920, 30), #바닥
+        Platform(214,166,43,43),
         Platform(297, 144, 84, 34),
         Platform(420, 85, 43, 34),
         Platform(633,166,86,43),
@@ -70,7 +71,8 @@ def main():
         Platform(964,124,84,85),
         Platform(1309,163,43,34),
         Platform(1400,126,43,34),
-        Platform(1606,173,33,36),
+        Platform(1543,174,31,35),
+        Platform(1615,169,43,43)
         #Platform(240, 190, 50, 20) # 플랫폼 위치와 크기 설정
     ]
     
@@ -112,9 +114,11 @@ def main():
     skills = [skill0, skill0_error, skill0_end, skill2, skill2_error, skill2_end, skill31, skill31_error, skill31_end, skill32, skill32_error, skill32_end ]
 
     obstacle1 = [
-        Obstacle(0,210,1,1),
-        Obstacle(442,182,79,27),
+        Obstacle(442,192,79,27),
+        Obstacle(859,183,73,26),
+        Obstacle(1172,199,37,11),
         Obstacle(1384,180,79,27),
+        Obstacle(1767,193,37,11),
     ]
     
     obstacle2 = [
@@ -153,14 +157,14 @@ def main():
     show_intro_images(joystick, intro_image_paths)
     
     # 스테이지 1 시작
-    # if stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, background_images, skills) == 7 :
-    #     show_game_over(joystick)
-    #     return
+    if stage1(joystick, my_character, platforms1, background_images[0], obstacle1, portal1, background_images, skills) == 7 :
+        show_game_over(joystick)
+        return
     
     # 스테이지 2 시작
-    # if stage2(joystick, my_character2, platforms2, background_images[2], obstacle2, portal1, background_images, skills, monsters) == 7 :
-    #     show_game_over(joystick)
-    #     return
+    if stage2(joystick, my_character2, platforms2, background_images[2], obstacle2, portal1, background_images, skills, monsters) == 7 :
+        show_game_over(joystick)
+        return
     
     # 스테이지 3 시작
     if stage3(joystick, my_character3, platforms3, background_images[4], obstacle3, portal1, background_images, skills, monsters) == 7 :
