@@ -85,7 +85,6 @@ def main():
         Platform(1058,115,84,27),
         Platform(1269,170,121,39),
         Platform(1443,124,43,85),
-        #Platform(240, 190, 50, 20) # 플랫폼 위치와 크기 설정
     ]
     
     platforms3 = [
@@ -137,20 +136,19 @@ def main():
     ]
     
 
-    my_character = Character(
+    my_character = Character( # 1스테이지의 캐릭터 능력
         joystick.disp.width // 2 - 60, joystick.disp.height // 2 - 20, character_image_path
     )
     
-    my_character2 = Character2(
+    my_character2 = Character2( # 2스테이지의 캐릭터 능력
         joystick.disp.width // 2 - 60, joystick.disp.height // 2 - 20, character_image_path, bullet_image_path
     )
     
-    my_character3 = Character3(
+    my_character3 = Character3( # 3스테이지의 캐릭터 능력
         joystick.disp.width // 2 - 60, joystick.disp.height // 2 - 20, character_image_path, bullet_image_path
     )
 
     # 포탈 생성
-    #portal1 = Portal(260, 190, 50, 20)  # 포탈 위치와 크기 설정
     portal1 = Portal(1815,121,42,105)
 
     # 인트로 이미지 보여주기

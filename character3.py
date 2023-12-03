@@ -3,6 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 class Character3:
     def __init__(self, x, y, character_image_path, bullet_image_path):
+        #캐릭터 초기화
         self.position = [x, y]
         self.jumping = False
         self.jump_height = 40  # 점프 높이
@@ -10,7 +11,6 @@ class Character3:
         self.jump_frame_count = 0
         self.character_image = Image.open(character_image_path, mode='r').convert("RGBA")
         self.bullet = Bullet(x, y, bullet_image_path)
-        #self.lives = 3
         self.life_manager = LifeManager(3)  # 캐릭터의 목숨 관리자
         self.invincible = False  # 무적 상태
         self.invincibility_start_time = None  # 무적 상태 시작 시간
@@ -19,16 +19,13 @@ class Character3:
         self.additional_jump = False  # 추가 점프 여부
 
     def move(self, joystick, platforms, monster):
-        # 조이스틱 입력에 따라 캐릭터 위치 갱신
-        #if joystick.is_button_pressed(joystick.button_U):
-        #    self.position[1] -= 5
         if joystick.is_button_pressed(joystick.button_D):
             self.position[1] += 5
         elif joystick.is_button_pressed(joystick.button_L):
             self.position[0] -= 5
         elif joystick.is_button_pressed(joystick.button_R):
             self.position[0] += 5
-            
+        #A 버튼을 누를 시 총알 발사
         if joystick.is_button_pressed(joystick.button_A):
             if not self.bullet.active:
                 self.bullet.position = [self.position[0], self.position[1]]
@@ -37,7 +34,7 @@ class Character3:
         # 총알 이동
         self.bullet.move()
             
-        # A 버튼이 떼어진 경우 총알 발사 상태를 재설정
+        # A 버튼이 떼어지면 총알 발사 상태를 재설정
         if not joystick.is_button_pressed(joystick.button_A):
             self.bullet.active = False
 
@@ -49,7 +46,7 @@ class Character3:
                 # 캐릭터가 플랫폼 위에 있을 경우
                 self.position[1] = platform.position[1] - self.character_image.height
                 on_platform = True
-                self.remaining_jumps = self.max_jumps  # 캐릭터가 바닥에 닿았으므로 점프 횟수를 초기화
+                self.remaining_jumps = self.max_jumps  # 캐릭터가 바닥에 닿았으므로 더블 점프를 위한 점프 횟수를 초기화
                 break
 
         # 캐릭터가 플랫폼 위에 있는지 확인
@@ -97,7 +94,7 @@ class Character3:
             
             
     def draw(self, image, camera_position):
-        # 캐릭터를 주어진 draw 객체를 사용하여 그림
+        # 캐릭터를 draw 객체를 사용하여 그림
         character_draw_position = (
             self.position[0] - camera_position[0],
             self.position[1] - camera_position[1],
@@ -108,10 +105,10 @@ class Character3:
 
 
 class LifeManager:
-    def __init__(self, initial_lives):
+    def __init__(self, initial_lives): #목숨 관리자 초기화
         self.lives = initial_lives
 
-    def decrease_life(self):
+    def decrease_life(self): # 목숨 감소
         self.lives -= 1
 
     def get_lives(self):
@@ -119,17 +116,17 @@ class LifeManager:
     
 
 class Bullet:
-    def __init__(self, x, y, bullet_image_path):
+    def __init__(self, x, y, bullet_image_path): # 총알 초기화
         self.position = [x, y]
         self.bullet_image = Image.open(bullet_image_path).convert("RGBA")
         self.active = False  # 총알이 활성화되어 있는지 여부
 
     def move(self):
         if self.active:
-            # 총알을 위로 이동 (필요에 따라 속도 조절)
+            # 총알 이동
             self.position[0] += 5
 
-    def draw(self, image, camera_position):
+    def draw(self, image, camera_position): # 총알 그리기
         if self.active:
             bullet_draw_position = (
                 self.position[0] - camera_position[0],
@@ -160,7 +157,7 @@ class Bullet:
     
    
 class Monster:
-    def __init__(self, x, y, width, height,image_path):
+    def __init__(self, x, y, width, height,image_path): #몬스터 초기화
         self.position = [x, y]
         self.width = width
         self.height = height

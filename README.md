@@ -29,3 +29,9 @@ monster_stage2 add
 23.11.30
 stage3 image add, character double jump add, B button
 monster_stage3 add
+
+23.12.01
+game over, gameclear add
+
+23.12.03 
+stage1 platform add

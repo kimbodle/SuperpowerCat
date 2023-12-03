@@ -4,9 +4,9 @@ from PIL import Image, ImageDraw, ImageFont
 
    
 def show_intro_images(joystick, intro_images):
-    # 이미지를 보여주는 함수
+    # 인트로 이미지를 보여주는 함수
     for image_path in intro_images:
-        # 이미지를 로드하고 RGB 모드로 변환
+        # 인트로 이미지를 로드하고 RGB 모드로 변환
         image = Image.open(image_path).convert("RGB")
 
         # 디스플레이 크기에 맞게 이미지 크기를 조정
@@ -16,7 +16,7 @@ def show_intro_images(joystick, intro_images):
         while True:
             joystick.disp.image(image)
             if joystick.is_button_pressed(joystick.button_A):
-                time.sleep(0.2)  # 디바운싱: 버튼이 눌렸다 떼어진 후 0.2초 동안 추가 입력을 무시
+                time.sleep(0.2)
                 break
 
 
@@ -32,7 +32,7 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
         # 조이스틱 버튼 확인 및 캐릭터 위치 갱신
         my_character.move(joystick, platforms)
         
-        # 카메라 위치 조절 (이미지 경계를 벗어나지 않도록)
+        # 카메라 위치 조절
         camera_position[0] = max(
             0, min(my_character.position[0] - joystick.disp.width // 7, background_image.width - joystick.disp.width)
         )
@@ -65,7 +65,7 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
         my_character.check_collision(obstacles)
         
         if my_character.life_manager.get_lives() < previous_lives:
-            draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill="red", font=font)
+            draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill="red", font=font) #부딫치면 캐릭터의 목숨 글씨가 빨강으로 변함
 
         # 캐릭터의 목숨이 0 이하인 경우 게임 종료
         if my_character.life_manager.get_lives() <= 0:
@@ -137,7 +137,6 @@ def monster_stage1(joystick, background_image, pattern, skills):
         # RGB 디스플레이에 이미지 표시
         joystick.disp.image(image.convert("RGBA"))
 
-        # 디바운싱
         time.sleep(0.2)
 
         # 모든 패턴을 입력했으면
@@ -174,7 +173,7 @@ def stage2(joystick, my_character, platforms, background_image, obstacles, porta
         # 조이스틱 버튼 확인 및 캐릭터 위치 갱신
         my_character.move(joystick, platforms, monsters)
         
-        # 카메라 위치 조절 (이미지 경계를 벗어나지 않도록)
+        # 카메라 위치 조절
         camera_position[0] = max(
             0, min(my_character.position[0] - joystick.disp.width // 7, background_image.width - joystick.disp.width)
         )
@@ -203,8 +202,7 @@ def stage2(joystick, my_character, platforms, background_image, obstacles, porta
         # 몬스터1 충돌 확인
         if my_character.bullet.active and my_character.bullet.check_collision(monsters[0]):
             my_character.bullet.active = False  # 총알이 몬스터에 맞았음
-            monsters[0].active = False  # 몬스터를 비활성화하여 사라지게 함
-            # 몬스터 피격 처리 (삭제하거나 몬스터 이미지 변경 등)
+            monsters[0].active = False 
         
         if monsters[0].active:
             monster_draw_position = (
@@ -295,7 +293,7 @@ def stage2(joystick, my_character, platforms, background_image, obstacles, porta
             # 입력 패턴 정의
             pattern = ['D', 'L', 'R', 'A', 'U','R','A']
 
-            # 스테이지2 시작
+            # 몬스터 스테이지2 시작
             monster_stage2(joystick, background_images[3], pattern, skills)
 
             # 1초 대기
@@ -316,7 +314,7 @@ def monster_stage2(joystick, background_image, pattern, skills):
     # 패턴 입력 결과를 저장할 리스트 초기화
     pattern_result = []
 
-    # 몬스터 스테이지1 시작
+    # 몬스터 스테이지2 시작
     while True:
         # 조이스틱 입력 확인
         if joystick.is_button_pressed(joystick.button_U):
@@ -352,19 +350,17 @@ def monster_stage2(joystick, background_image, pattern, skills):
         # RGB 디스플레이에 이미지 표시
         joystick.disp.image(image.convert("RGBA"))
 
-        # 디바운싱
         time.sleep(0.2)
 
         # 모든 패턴을 입력했으면
         if pattern_index >= len(pattern):
-            # 결과 이미지를 로드: 패턴 결과에 'X'가 하나라도 있으면 'error.png', 아니면 'skill1.png'
+            # 결과 이미지를 로드: 패턴 결과에 'X'가 하나라도 있으면 'error.png', 아니면 'skill2.png'
 
             result_image = skills[4] if 'X' in pattern_result else skills[3]
             
             # 결과 이미지 표시
             joystick.disp.image(result_image)
 
-            # 1초 대기
             time.sleep(1)
 
             # 패턴 결과에 'X'가 없으면 몬스터 스테이지2 종료
@@ -388,7 +384,7 @@ def stage3(joystick, my_character, platforms, background_image, obstacles, porta
         # 조이스틱 버튼 확인 및 캐릭터 위치 갱신
         my_character.move(joystick, platforms, monsters)
         
-        # 카메라 위치 조절 (이미지 경계를 벗어나지 않도록)
+        # 카메라 위치 조절
         camera_position[0] = max(
             0, min(my_character.position[0] - joystick.disp.width // 7, background_image.width - joystick.disp.width)
         )
@@ -462,7 +458,7 @@ def stage3(joystick, my_character, platforms, background_image, obstacles, porta
         my_character.check_collision(obstacles)
         
         if my_character.life_manager.get_lives() < previous_lives:
-            draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill="red", font=font)
+            draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill="red", font=font) #부딫치면 캐릭터의 목숨 글씨가 빨강으로 변함
 
         # 캐릭터의 목숨이 0 이하인 경우 게임 종료
         if my_character.life_manager.get_lives() <= 0:
@@ -476,12 +472,12 @@ def stage3(joystick, my_character, platforms, background_image, obstacles, porta
             # 입력 패턴 정의
             pattern = ['L', 'A', 'U', 'R','B','D','B']
 
-            # 몬스터 스테이지31 시작
+            # 몬스터 스테이지3-1 시작
             monster_stage31(joystick, background_images[5], pattern, skills)
             
             pattern = ['A', 'R', 'B', 'D','L','U','A','B','B','B']
             
-            # 몬스터 스테이지32 시작
+            # 몬스터 스테이지3-2 시작
             monster_stage32(joystick, background_images[6], pattern, skills)
 
             # 1초 대기
@@ -502,7 +498,7 @@ def monster_stage31(joystick, background_image, pattern, skills):
     # 패턴 입력 결과를 저장할 리스트 초기화
     pattern_result = []
 
-    # 몬스터 스테이지1 시작
+    # 몬스터 스테이지3-1 시작
     while True:
         # 조이스틱 입력 확인
         if joystick.is_button_pressed(joystick.button_U):
@@ -545,7 +541,7 @@ def monster_stage31(joystick, background_image, pattern, skills):
 
         # 모든 패턴을 입력했으면
         if pattern_index >= len(pattern):
-            # 결과 이미지를 로드: 패턴 결과에 'X'가 하나라도 있으면 'error.png', 아니면 'skill1.png' 이제 여기 바꿔야함
+            # 결과 이미지를 로드: 패턴 결과에 'X'가 하나라도 있으면 'error.png', 아니면 'skill31.png' 이제 여기 바꿔야함
 
             result_image = skills[7] if 'X' in pattern_result else skills[6]
             
@@ -555,7 +551,7 @@ def monster_stage31(joystick, background_image, pattern, skills):
             # 1초 대기
             time.sleep(1)
 
-            # 패턴 결과에 'X'가 없으면 몬스터 스테이지2 종료
+            # 패턴 결과에 'X'가 없으면 몬스터 스테이지3-1 종료
             if 'X' not in pattern_result:
                 joystick.disp.image(skills[8])
                 # 1초 대기
@@ -573,7 +569,7 @@ def monster_stage32(joystick, background_image, pattern, skills):
     # 패턴 입력 결과를 저장할 리스트 초기화
     pattern_result = []
 
-    # 몬스터 스테이지1 시작
+    # 몬스터 스테이지3-2 시작
     while True:
         # 조이스틱 입력 확인
         if joystick.is_button_pressed(joystick.button_U):
@@ -610,13 +606,11 @@ def monster_stage32(joystick, background_image, pattern, skills):
 
         # RGB 디스플레이에 이미지 표시
         joystick.disp.image(image.convert("RGBA"))
-
-        # 디바운싱
         time.sleep(0.2)
 
         # 모든 패턴을 입력했으면
         if pattern_index >= len(pattern):
-            # 결과 이미지를 로드: 패턴 결과에 'X'가 하나라도 있으면 'error.png', 아니면 'skill1.png' 이제 여기 바꿔야함
+            # 결과 이미지를 로드: 패턴 결과에 'X'가 하나라도 있으면 'error.png', 아니면 'skill32.png' 이제 여기 바꿔야함
 
             result_image = skills[10] if 'X' in pattern_result else skills[9]
             
@@ -636,12 +630,11 @@ def monster_stage32(joystick, background_image, pattern, skills):
             pattern_result.clear()
             pattern_index = 0
             
-def show_game_over(joystick):
+def show_game_over(joystick): #게임 오버 함수
     game_over_image_path = "/home/kau-esw/esw/SuperpowerCat/Asset/GameOver.png"
     game_over_image = Image.open(game_over_image_path).convert("RGBA")
 
     # RGB 디스플레이에 이미지 표시
     joystick.disp.image(game_over_image)
 
-    # 일정 시간 대기 후 게임 종료
     time.sleep(2)

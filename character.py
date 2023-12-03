@@ -69,7 +69,7 @@ class Character:
             
             
     def draw(self, image, camera_position):
-        # 캐릭터를 주어진 draw 객체를 사용하여 그림
+        # 캐릭터를 draw 객체를 사용하여 그림
         character_draw_position = (
             self.position[0] - camera_position[0],
             self.position[1] - camera_position[1],

@@ -43,6 +43,13 @@ class Joystick:
 
         self.button_B = DigitalInOut(board.D6)
         self.button_B.direction = Direction.INPUT
+        
+        self.backlight = DigitalInOut(board.D26)
+        self.backlight.switch_to_output()
+        self.backlight.value = True
+
+        self.width = self.disp.width
+        self.height = self.disp.height
 
     def is_button_pressed(self, button):
         # 버튼이 눌렸는지 확인

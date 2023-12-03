@@ -16,9 +16,6 @@ class Character2:
         self.invincibility_start_time = None  # 무적 상태 시작 시간
 
     def move(self, joystick, platforms, monster):
-        # 조이스틱 입력에 따라 캐릭터 위치 갱신
-        #if joystick.is_button_pressed(joystick.button_U):
-        #    self.position[1] -= 5
         if joystick.is_button_pressed(joystick.button_D):
             self.position[1] += 5
         elif joystick.is_button_pressed(joystick.button_L):
