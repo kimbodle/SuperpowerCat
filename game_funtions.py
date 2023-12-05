@@ -57,7 +57,8 @@ def stage1(joystick, my_character, platforms, background_image, obstacles, porta
 
         # 보이는 이미지 부분을 새로운 이미지에 붙여넣기
         image.paste(visible_image, (0, 0))
-        draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(255,255,102), font=font)
+        #draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(255,255,102), font=font)
+        draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(68,221,187), font=font)
         draw.text((10, 10), f"Stage 1", fill=(68,221,187), font=font)
         
         # 충돌 확인 및 목숨 감소
@@ -450,7 +451,7 @@ def stage3(joystick, my_character, platforms, background_image, obstacles, porta
 
         # 보이는 이미지 부분을 새로운 이미지에 붙여넣기
         image.paste(visible_image, (0, 0))
-        draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(255,255,102), font=font)
+        draw.text((170, 10), f"Lives: {my_character.life_manager.get_lives()}", fill=(51,255,51), font=font)
         draw.text((10, 10), f"Stage 3", fill=(51,255,51), font=font)
         
         # 충돌 확인 및 목숨 감소

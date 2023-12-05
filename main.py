@@ -63,7 +63,7 @@ def main():
     platforms1 = [
         Platform(0, 210, 1920, 30), #바닥
         Platform(214,166,43,43),
-        Platform(297, 144, 84, 34),
+        Platform(297, 144, 84, 24),
         Platform(420, 85, 43, 34),
         Platform(633,166,86,43),
         Platform(761,121,86,43),

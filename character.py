@@ -37,7 +37,7 @@ class Character:
         # 캐릭터가 플랫폼 위에 있는지 확인
         if not on_platform:
             # 플랫폼 위에 없는 경우, 중력 효과 적용
-            self.position[1] += 3
+            self.position[1] += 4
 
         # 점프 버튼 확인 및 캐릭터 점프
         if joystick.is_button_pressed(joystick.button_U) and not self.jumping and on_platform:
@@ -46,8 +46,8 @@ class Character:
 
         # 점프 중일 때 처리
         if self.jumping:
-            self.position[1] -= 9
-            self.jump_frame_count += 1
+            self.position[1] -= 17
+            self.jump_frame_count += 2
 
             if self.jump_frame_count >= self.jump_frames:
                 self.jumping = False
